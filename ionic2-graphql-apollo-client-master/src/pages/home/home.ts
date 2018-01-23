@@ -18,8 +18,7 @@ const AllUsersWithCompany = gql`
   query AllUsers {
     allUsers {
       id
-      first_name
-      last_name
+      name
       company {
         id
         name
@@ -29,28 +28,23 @@ const AllUsersWithCompany = gql`
 `;
 
 
-const AllUsers = gql`
-  query AllUsers {
+const allUsers = gql`
+  query allUsers {
     allUsers {
       id
-      first_name
-      last_name
+      name
+      email
     }
   }
 `;
 
 
-const addUser = gql`
-  mutation addUser($first_name:String!, $last_name:String!, $email:String!, $companyId: ID!) {
-    addUser(first_name: $first_name, last_name: $last_name, email: $email, companyId : $companyId) {
+const createUser = gql`
+  mutation createUser($name:String!, $email:String!, $password:String!) {
+    createUser(name: $name, authProvider: {email: {email: $email, password: $password}}) {
       id
-      first_name
-      last_name
+      name
       email
-      company {
-        id
-        name
-      }
     }
   }
 `;
@@ -84,18 +78,18 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.allUsers = this
       .apollo
-      .watchQuery({ query: AllUsers });
+      .watchQuery({ query: allUsers });
 
     // get all the companies for the input form
 
-    this.allCompanies = this
-      .apollo
-      .watchQuery({ query: AllCompanies });
+    // this.allCompanies = this
+    //   .apollo
+    //   .watchQuery({ query: AllCompanies });
   }
 
 
   deleteUser(_id) {
-    console.log(_id);
+    console.log("Deleteting user with ID:"+_id);
 
     this.apollo.mutate({
       mutation: deleteUser,
@@ -105,7 +99,7 @@ export class HomePage implements OnInit {
       // this will provide an update of the main AllUsers
       // query so the list gets updated...
       updateQueries: {
-        AllUsers: (prev, { mutationResult }) => {
+        allUsers: (prev, { mutationResult }) => {
           const deletedUser = mutationResult.data.deleteUser;
           const prevAllUsers = prev.allUsers;
 
@@ -118,25 +112,25 @@ export class HomePage implements OnInit {
       console.log('got data: deleted user', data);
 
     }, (error) => {
-      console.log('there was an error sending the query', error);
+      console.error('there was an error sending the query', error);
     });
   }
 
 
-  addUserClicked(_formValue) {
+  createUserClicked(_formValue) {
     console.log(_formValue);
 
-    let params = Object.assign(_formValue, {companyId : _formValue.company.id})
+    let params = Object.assign(_formValue, {});
 
     this.apollo.mutate({
-      mutation: addUser,
+      mutation: createUser,
       variables: params,
 
       // this will provide an update of the main AllUsers
       // query so the list gets updated...
       updateQueries: {
-        AllUsers: (prev, { mutationResult }) => {
-          const newUser = mutationResult.data.addUser;
+        allUsers: (prev, { mutationResult }) => {
+          const newUser = mutationResult.data.createUser;
           const prevAllUsers = prev.allUsers;
 
           return {
@@ -148,7 +142,7 @@ export class HomePage implements OnInit {
       console.log('got data', data);
 
     }, (error) => {
-      console.log('there was an error sending the query', error);
+      console.error('there was an error sending the query', error);
     });
   }
 }

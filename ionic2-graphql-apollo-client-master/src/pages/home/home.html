@@ -12,36 +12,26 @@
     <ion-list>
       <ion-item>
         <ion-label floating>First Name</ion-label>
-        <ion-input type="text" required  ngModel name="first_name" id="first_name"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>Last Name</ion-label>
-        <ion-input type="text" required  ngModel name="last_name" id="last_name"></ion-input>
+        <ion-input type="text" required  ngModel name="name" id="first_name"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label floating> Email Address </ion-label>
         <ion-input type="email"  ngModel name="email" id="email" email></ion-input>
       </ion-item>
-
-      <ion-item >
-        <ion-select name="company" id="company"  class="company-selector" ngModel required>
-          <ion-option disabled value="">Pick Company</ion-option>
-          <ion-option *ngFor="let company of allCompanies  | async| select : 'allCompanies'   as f " [value]="company">
-            {{company.name}}
-          </ion-option>
-        </ion-select>
+      <ion-item>
+        <ion-label floating> Password </ion-label>
+        <ion-input type="password"  ngModel name="password" id="password" password></ion-input>
       </ion-item>
-
     </ion-list>
     <div padding>
-      <button ion-button (click)="addUserClicked(userForm.value)" [disabled]="!userForm.valid">Add User</button>
+      <button ion-button (click)="createUserClicked(userForm.value)" [disabled]="!userForm.valid">Add User</button>
     </div>
   </form>
 
 
   <ion-item *ngFor="let user of allUsers | async | select : 'allUsers'">
-    {{ user.first_name }} &nbsp; {{user.last_name}}
+    {{ user.name }} &nbsp; {{user.email}}
     <ion-icon name="trash" item-end (click)="deleteUser(user.id)"></ion-icon>
   </ion-item>
-  {{userForm.value| json}}
+  <!-- {{userForm.value| json}} -->
 </ion-content>
